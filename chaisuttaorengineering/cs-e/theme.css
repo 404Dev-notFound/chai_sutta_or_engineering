@@ -1,0 +1,50 @@
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Inter:wght@300;400;600&display=swap');
+
+:root {
+  /* Default: Hacker Theme */
+  --bg-color: #0F1115;
+  --text-color: #ffffff;
+  --text-muted: #a0aab5;
+  --accent: #00E5FF;
+  --secondary: #00FF88;
+  --font-family: 'JetBrains Mono', monospace;
+  --btn-radius: 2px;
+  --glow: 0 0 15px rgba(0, 229, 255, 0.4), 0 0 30px rgba(0, 229, 255, 0.2);
+  --border-glow: 1px solid var(--accent);
+  --hover-scale: scale(1.05);
+  --transition-speed: 0.2s;
+  --card-bg: rgba(15, 17, 21, 0.8);
+}
+
+body.luxury {
+  /* Luxury Theme */
+  --bg-color: #0B0B0B;
+  --text-color: #f5f5f7;
+  --text-muted: #888888;
+  --accent: #D4AF37;
+  --secondary: #C5A000;
+  --font-family: 'Inter', sans-serif;
+  --btn-radius: 8px;
+  --glow: none;
+  --border-glow: 1px solid rgba(212, 175, 55, 0.4);
+  --hover-scale: scale(1);
+  --transition-speed: 0.4s;
+  --card-bg: rgba(17, 17, 17, 0.6);
+}
+
+body {
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    font-family: var(--font-family);
+    transition: background-color var(--transition-speed) ease, color var(--transition-speed) ease;
+}
+
+/* Theme specifics */
+.hacker .glow-text:hover {
+    text-shadow: var(--glow);
+}
+
+.luxury .glow-text:hover {
+    color: var(--accent);
+    text-shadow: none;
+}

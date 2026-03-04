@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard — CS.E</title>
+    <link rel="stylesheet" href="theme.css">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* ══ Roadmap Styles ══════════════════════════════════ */
+        .roadmap-section {
+            padding: 2rem 0 4rem;
+        }
+
+        .roadmap-section h3 {
+            text-align: center;
+            font-size: 1.6rem;
+            color: var(--secondary);
+            margin-bottom: 0.3rem;
+        }
+
+        .roadmap-section .sub {
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            margin-bottom: 3rem;
+        }
+
+        /* vertical orbital timeline */
+        .roadmap-orbit {
+            position: relative;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        .orbit-line {
+            position: absolute;
+            left: 50%;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: linear-gradient(to bottom, var(--accent), var(--secondary), var(--accent));
+            transform: translateX(-50%);
+            opacity: 0.3;
+        }
+
+        .orbit-node {
+            display: flex;
+            align-items: flex-start;
+            gap: 1.5rem;
+            margin-bottom: 2.5rem;
+            position: relative;
+        }
+
+        .orbit-node:nth-child(even) {
+            flex-direction: row-reverse;
+        }
+
+        .orbit-dot {
+            position: absolute;
+            left: 50%;
+            top: 1rem;
+            transform: translateX(-50%);
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            background: var(--accent);
+            box-shadow: 0 0 12px var(--accent);
+            z-index: 2;
+            flex-shrink: 0;
+        }
+
+        .orbit-node:nth-child(even) .orbit-dot {
+            background: var(--secondary);
+            box-shadow: 0 0 12px var(--secondary);
+        }
+
+        .orbit-card {
+            width: calc(50% - 2rem);
+            background: var(--card-bg);
+            border: 1px solid rgba(255, 255, 255, 0.07);
+            border-radius: 6px;
+            padding: 1.2rem 1.5rem;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .orbit-card:hover {
+            border-color: var(--accent);
+            box-shadow: var(--glow);
+            transform: translateY(-3px);
+        }
+
+        .orbit-node:nth-child(even) .orbit-card {
+            margin-left: auto;
+        }
+
+        .orbit-node:nth-child(odd) .orbit-card {
+            margin-right: auto;
+        }
+
+        .orbit-card .step-num {
+            font-size: 0.7rem;
+            color: var(--accent);
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            margin-bottom: 0.3rem;
+        }
+
+        .orbit-card h4 {
+            font-size: 1rem;
+            color: var(--text-color);
+            margin-bottom: 0.4rem;
+        }
+
+        .orbit-card p {
+            font-size: 0.82rem;
+            color: var(--text-muted);
+            line-height: 1.5;
+        }
+
+        .orbit-card .tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.4rem;
+            margin-top: 0.7rem;
+        }
+
+        .orbit-card .tag {
+            font-size: 0.65rem;
+            padding: 0.2rem 0.6rem;
+            border: 1px solid var(--accent);
+            border-radius: 50px;
+            color: var(--accent);
+            opacity: 0.7;
+        }
+
+        /* ══ BG Canvas ═════════════════════════════════════ */
+        #dash-canvas {
+            position: fixed;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        body>* {
+            position: relative;
+            z-index: 1;
+        }
+
+        /* ══ Risk Result styling ════════════════════════════ */
+        #dropout-result h3 {
+            margin-bottom: 0.5rem;
+        }
+
+        #dropout-result ul {
+            list-style: none;
+            margin-top: 0.5rem;
+        }
+
+        #dropout-result ul li {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            padding: 0.2rem 0;
+        }
+
+        #dropout-result ul li::before {
+            content: '> ';
+            color: var(--accent);
+        }
+    </style>
+</head>
+
+<body>
+
+    <canvas id="dash-canvas"></canvas>
+
+    <div class="container">
+        <!-- Navbar -->
+        <nav class="navbar">
+            <a href="/" class="nav-brand glow-text">_ CS.E</a>
+            <div class="nav-links">
+                <a href="/anonymous" class="btn">Anonymous</a>
+                <a href="/logout" class="btn btn-highlight">Logout</a>
+                <button id="theme-toggle" class="theme-toggle-btn">🌗</button>
+            </div>
+        </nav>
+
+        <!-- Welcome -->
+        <section style="margin-top: 3rem;">
+            <h1>Welcome to the <span class="glow-text" style="color:var(--accent);">Control Panel</span></h1>
+            <p style="color: var(--text-muted); margin-top:0.4rem;">Execute your career diagnostics and roadmap below.
+            </p>
+        </section>
+
+        <!-- Risk Calculator & Result -->
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-top: 3rem;">
+
+            <div class="block-card">
+                <h3>⚠️ Dropout Risk Calculator</h3>
+                <form id="dropout-form" style="text-align: left; margin-top: 1.5rem;">
+
+                    <div class="form-group">
+                        <label>Study Hours / Day (0-24)</label>
+                        <input type="number" step="0.5" id="study_hours" required placeholder="e.g. 4">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Internship Attempts</label>
+                        <input type="number" id="internship_attempts" required placeholder="e.g. 2">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Skill Growth Rate (1-10)</label>
+                        <input type="number" id="skill_growth" required placeholder="e.g. 7" min="1" max="10">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Clarity Score (1-10)</label>
+                        <input type="number" id="clarity_score" required placeholder="How clear are your goals?" min="1"
+                            max="10">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Consistency (1-10)</label>
+                        <input type="number" id="consistency" required placeholder="How consistent are you?" min="1"
+                            max="10">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Confidence (1-10)</label>
+                        <input type="number" id="confidence" required placeholder="Do you believe in yourself?" min="1"
+                            max="10">
+                    </div>
+
+                    <button type="submit" class="btn btn-highlight" style="width:100%;">Analyze Risk</button>
+                </form>
+
+                <div id="dropout-result" style="margin-top: 2rem; text-align: left;"></div>
+            </div>
+
+            <div class="block-card"
+                style="display:flex; flex-direction:column; justify-content:center; align-items:center; min-height: 400px;">
+                <div style="font-size:3rem; margin-bottom:1rem;">🤖</div>
+                <h3 style="color: var(--secondary);">AI Risk Summary</h3>
+                <p style="color: var(--text-muted); margin: 1rem 0; text-align:center; font-size:0.9rem;">Run the
+                    calculator to get your personalized risk report with immediate steps.</p>
+                <div id="risk-meter" style="width:100%; margin-top:1rem; display:none;">
+                    <div
+                        style="display:flex; justify-content:space-between; font-size:0.75rem; color:var(--text-muted); margin-bottom:0.4rem;">
+                        <span>Safe</span><span>Risk</span>
+                    </div>
+                    <div style="height:8px; background:rgba(255,255,255,0.1); border-radius:50px; overflow:hidden;">
+                        <div id="risk-bar"
+                            style="height:100%; width:0%; background: linear-gradient(to right, var(--secondary), var(--accent)); border-radius:50px; transition:width 1.2s ease;">
+                        </div>
+                    </div>
+                    <p id="risk-pct"
+                        style="text-align:center; margin-top:0.5rem; font-size:1.2rem; font-weight:700; color:var(--accent);">
+                        0%</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- ══ ROADMAP ═══════════════════════════════════════════ -->
+        <div class="roadmap-section" id="roadmap">
+            <h3>🗺 Your Engineering Roadmap</h3>
+            <p class="sub">Zero to execution. No shortcuts, just the real path.</p>
+
+            <div class="roadmap-orbit">
+                <div class="orbit-line"></div>
+
+                <div class="orbit-node">
+                    <div class="orbit-dot"></div>
+                    <div class="orbit-card">
+                        <div class="step-num">Phase 01 — Foundation</div>
+                        <h4>Pick Your Weapon</h4>
+                        <p>Choose ONE language. Don't touch 5. Python, JS, or C++ — master the fundamentals first.</p>
+                        <div class="tags">
+                            <span class="tag">Python</span>
+                            <span class="tag">JavaScript</span>
+                            <span class="tag">30 Days</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="orbit-node">
+                    <div class="orbit-dot"></div>
+                    <div class="orbit-card">
+                        <div class="step-num">Phase 02 — Build</div>
+                        <h4>Ship 3 Ugly Projects</h4>
+                        <p>No tutorials. Build a to-do app, a weather app, a portfolio. Make them ugly but working.</p>
+                        <div class="tags">
+                            <span class="tag">GitHub</span>
+                            <span class="tag">Deploy</span>
+                            <span class="tag">45 Days</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="orbit-node">
+                    <div class="orbit-dot"></div>
+                    <div class="orbit-card">
+                        <div class="step-num">Phase 03 — Apply</div>
+                        <h4>Cold Email 50 Startups</h4>
+                        <p>Micro-internships, freelance gigs, or open source contributions. Get your first ₹500 online.
+                        </p>
+                        <div class="tags">
+                            <span class="tag">Freelance</span>
+                            <span class="tag">Internships</span>
+                            <span class="tag">30 Days</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="orbit-node">
+                    <div class="orbit-dot"></div>
+                    <div class="orbit-card">
+                        <div class="step-num">Phase 04 — Specialise</div>
+                        <h4>Go Deep in One Stack</h4>
+                        <p>ML, Web, DevOps, Security. Pick based on what paid you. Double down and become dangerous.</p>
+                        <div class="tags">
+                            <span class="tag">ML / AI</span>
+                            <span class="tag">Full Stack</span>
+                            <span class="tag">60 Days</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="orbit-node">
+                    <div class="orbit-dot"></div>
+                    <div class="orbit-card">
+                        <div class="step-num">Phase 05 — Execute</div>
+                        <h4>Launch Your Thing</h4>
+                        <p>Product, agency, SaaS, or service — build one real thing the market will pay for. This is
+                            where most people quit. Don't.</p>
+                        <div class="tags">
+                            <span class="tag">Launch</span>
+                            <span class="tag">MRR</span>
+                            <span class="tag">Ongoing</span>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+
+    <script src="script.js"></script>
+    <script>
+        // ── Dashboard BG — Drifting Orbital Dots ────────────────
+        (function () {
+            const canvas = document.getElementById('dash-canvas');
+            const ctx = canvas.getContext('2d');
+            let W, H, dots = [];
+
+            function resize() { W = canvas.width = window.innerWidth; H = canvas.height = window.innerHeight; }
+
+            function createDot() {
+                return {
+                    x: Math.random() * W, y: Math.random() * H,
+                    r: Math.random() * 1.5 + 0.5,
+                    vx: (Math.random() - 0.5) * 0.3,
+                    vy: (Math.random() - 0.5) * 0.3,
+                    alpha: Math.random() * 0.4 + 0.05
+                };
+            }
+
+            function init() {
+                resize();
+                dots = [];
+                const n = Math.floor(W * H / 8000);
+                for (let i = 0; i < n; i++) dots.push(createDot());
+            }
+
+            function tick() {
+                ctx.clearRect(0, 0, W, H);
+                const isLuxury = document.body.classList.contains('luxury');
+                const col = isLuxury ? '212,175,55' : '0,229,255';
+                const col2 = isLuxury ? '197,160,0' : '0,255,136';
+
+                dots.forEach((d, i) => {
+                    d.x += d.vx; d.y += d.vy;
+                    if (d.x < 0) d.x = W; if (d.x > W) d.x = 0;
+                    if (d.y < 0) d.y = H; if (d.y > H) d.y = 0;
+
+                    ctx.beginPath();
+                    ctx.arc(d.x, d.y, d.r, 0, Math.PI * 2);
+                    ctx.fillStyle = `rgba(${i % 2 === 0 ? col : col2},${d.alpha})`;
+                    ctx.fill();
+
+                    // draw lines between nearby dots
+                    dots.slice(i + 1, i + 6).forEach(d2 => {
+                        const dx = d.x - d2.x, dy = d.y - d2.y;
+                        const dist = Math.sqrt(dx * dx + dy * dy);
+                        if (dist < 120) {
+                            ctx.beginPath();
+                            ctx.moveTo(d.x, d.y);
+                            ctx.lineTo(d2.x, d2.y);
+                            ctx.strokeStyle = `rgba(${col},${0.06 * (1 - dist / 120)})`;
+                            ctx.lineWidth = 0.5;
+                            ctx.stroke();
+                        }
+                    });
+                });
+                requestAnimationFrame(tick);
+            }
+
+            window.addEventListener('resize', init);
+            init();
+            tick();
+        })();
+
+        // ── Risk meter live update ───────────────────────────────
+        const origFetch = XMLHttpRequest.prototype.open;
+        document.getElementById('dropout-form').addEventListener('submit', function () {
+            // After form submits, script.js handles the fetch.
+            // We intercept the result via a mutation observer on #dropout-result
+            const observer = new MutationObserver(() => {
+                const h3 = document.querySelector('#dropout-result h3');
+                if (!h3) return;
+                const match = h3.textContent.match(/(\d+(\.\d+)?)%/);
+                if (match) {
+                    const pct = parseFloat(match[1]);
+                    const meter = document.getElementById('risk-meter');
+                    const bar = document.getElementById('risk-bar');
+                    const lbl = document.getElementById('risk-pct');
+                    meter.style.display = 'block';
+                    setTimeout(() => { bar.style.width = pct + '%'; }, 100);
+                    lbl.textContent = pct + '%';
+                    const accent = pct > 70 ? '#ff4444' : pct > 40 ? '#ffaa00' : '#00FF88';
+                    bar.style.background = `linear-gradient(to right, #00FF88, ${accent})`;
+                    lbl.style.color = accent;
+                }
+            });
+            observer.observe(document.getElementById('dropout-result'), { childList: true, subtree: true });
+        });
+
+        // ── Animate roadmap nodes on scroll ─────────────────────
+        const nodes = document.querySelectorAll('.orbit-node');
+        const io = new IntersectionObserver(entries => {
+            entries.forEach(e => {
+                if (e.isIntersecting) {
+                    e.target.style.opacity = '1';
+                    e.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, { threshold: 0.15 });
+
+        nodes.forEach(n => {
+            n.style.opacity = '0';
+            n.style.transform = 'translateY(30px)';
+            n.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+            io.observe(n);
+        });
+    </script>
+</body>
+
+</html>

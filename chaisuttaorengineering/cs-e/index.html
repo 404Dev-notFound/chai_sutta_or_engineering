@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CS.E — Chai Sutta Or Engineering</title>
+    <meta name="description" content="Engineering Isn't a Degree. It's Execution. Join CS.E.">
+    <link rel="stylesheet" href="theme.css">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* ── Canvas BG ─────────────────────────────── */
+        #hero-canvas {
+            position: fixed;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        body>* {
+            position: relative;
+            z-index: 1;
+        }
+
+        /* ── Floating Side Buttons ──────────────────── */
+        .fab-stack {
+            position: fixed;
+            left: 1.5rem;
+            bottom: 2rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.8rem;
+            z-index: 100;
+        }
+
+        .fab-btn {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            padding: 0.55rem 1.1rem;
+            background: rgba(15, 17, 21, 0.75);
+            border: 1px solid var(--accent);
+            border-radius: 50px;
+            color: var(--accent);
+            font-family: var(--font-family);
+            font-size: 0.8rem;
+            font-weight: 700;
+            cursor: pointer;
+            backdrop-filter: blur(12px);
+            box-shadow: 0 0 12px rgba(0, 229, 255, 0.25), inset 0 0 6px rgba(0, 229, 255, 0.05);
+            transition: all 0.3s ease;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+            animation: fabFloat 3s ease-in-out infinite;
+            text-decoration: none;
+        }
+
+        .fab-btn:nth-child(2) {
+            animation-delay: 0.6s;
+            border-color: var(--secondary);
+            color: var(--secondary);
+            box-shadow: 0 0 12px rgba(0, 255, 136, 0.25);
+        }
+
+        .fab-btn:hover {
+            transform: scale(1.08) translateX(4px);
+            background: var(--accent);
+            color: var(--bg-color);
+        }
+
+        .fab-btn:nth-child(2):hover {
+            background: var(--secondary);
+            color: var(--bg-color);
+        }
+
+        @keyframes fabFloat {
+
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-6px);
+            }
+        }
+
+        .fab-icon {
+            font-size: 1rem;
+        }
+
+        /* ── Hero ───────────────────────────────────── */
+        .hero {
+            min-height: 100vh;
+        }
+
+        .hero h1 {
+            font-size: clamp(2rem, 5vw, 4rem);
+            text-shadow: 0 0 30px rgba(0, 229, 255, 0.4);
+        }
+
+        /* ── Box Grid Hover (decoration layer) ─────── */
+        .box-grid-overlay {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 0;
+            overflow: hidden;
+        }
+
+        /* ── Overlay modal for Play / Listen ────────── */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            z-index: 999;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0, 0, 0, 0.92);
+            backdrop-filter: blur(6px);
+        }
+
+        .modal-overlay.open {
+            display: flex;
+        }
+
+        .modal-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 1.5rem;
+            right: 2rem;
+            font-size: 2rem;
+            cursor: pointer;
+            color: var(--accent);
+            z-index: 10;
+            background: none;
+            border: none;
+            font-family: inherit;
+        }
+
+        /* ── Play Canvas ─────────────────────────────── */
+        #play-canvas,
+        #listen-canvas {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        .modal-label {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            pointer-events: none;
+            z-index: 5;
+        }
+
+        .modal-label h2 {
+            font-size: 3rem;
+            color: var(--accent);
+            text-shadow: 0 0 30px var(--accent);
+            animation: pulse 2s ease infinite;
+        }
+
+        .modal-label p {
+            color: var(--text-muted);
+            font-size: 1rem;
+            margin-top: 0.5rem;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.5;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- 3D Box Background Canvas -->
+    <canvas id="hero-canvas"></canvas>
+
+    <!-- Floating side buttons (scroll with page but fixed) -->
+    <div class="fab-stack">
+        <button class="fab-btn" id="open-play"><span class="fab-icon">🎮</span> Let's Play</button>
+        <button class="fab-btn" id="open-listen"><span class="fab-icon">🎵</span> Let's Listen</button>
+    </div>
+
+    <!-- ── Play Modal ─────────────────────────────────────── -->
+    <div class="modal-overlay" id="play-modal">
+        <div class="modal-inner">
+            <button class="modal-close" id="close-play">✕</button>
+            <canvas id="play-canvas"></canvas>
+            <div class="modal-label">
+                <h2>Let's Play 🎮</h2>
+                <p style="color:var(--text-muted)">Click & drag to spawn particles. Coming soon: full mini-game.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- ── Listen Modal ───────────────────────────────────── -->
+    <div class="modal-overlay" id="listen-modal">
+        <div class="modal-inner">
+            <button class="modal-close" id="close-listen">✕</button>
+            <canvas id="listen-canvas"></canvas>
+            <div class="modal-label">
+                <h2>Let's Listen 🎵</h2>
+                <p>lo-fi beats to engineer to</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+
+        <!-- Navbar -->
+        <nav class="navbar">
+            <div class="nav-brand glow-text">_ CS.E</div>
+            <div class="nav-links">
+                <a href="/about" class="coming-soon">About</a>
+                <a href="/dashboard" class="coming-soon">Dashboard</a>
+                <a href="/anonymous" class="coming-soon">Anonymous</a>
+                <a href="/login" class="btn btn-highlight">Login</a>
+                <button id="theme-toggle" class="theme-toggle-btn" title="Switch Theme">🌗</button>
+            </div>
+        </nav>
+
+        <!-- Hero Section -->
+        <section class="hero">
+            <h1><span id="typewriter" class="glow-text"></span><span class="cursor"></span></h1>
+            <p
+                style="color:var(--accent); font-size:0.8rem; letter-spacing:0.3em; text-transform:uppercase; margin-bottom:0.5rem;">
+                Engineering Isn't a Degree. It's Execution.</p>
+
+            <div class="rotating-text-container">
+                <div class="rotating-text active">skill gap..?</div>
+                <div class="rotating-text">lets fix it</div>
+                <div class="rotating-text">personalized roadmap chahiye!!!</div>
+            </div>
+
+            <div class="hero-buttons">
+                <a href="/login" class="btn btn-highlight">Start Engineering It...</a>
+                <a href="#drift" class="btn coming-soon">explore ↓</a>
+            </div>
+        </section>
+
+        <!-- Drift Section -->
+        <section class="drift-section" id="drift">
+            <div class="drift-text active">let's Drift, boys 🤟</div>
+            <div class="drift-text">Dropout kare 🫡</div>
+            <div class="drift-text">side-hustle kare 😉</div>
+            <div class="drift-text">game khelne aajao dosto 🤨</div>
+        </section>
+
+        <!-- Three Blocks Section -->
+        <section class="three-blocks">
+            <div class="block-card">
+                <div style="font-size:2rem; margin-bottom:1rem;">⚠️</div>
+                <h3>Dropout Risk</h3>
+                <p>Calculate your chances of dropping out with AI diagnostics. Know your threat level.</p>
+                <a href="/login" class="btn" style="margin-top: 1.5rem; display:inline-block;">Analyze →</a>
+            </div>
+            <div class="block-card">
+                <div style="font-size:2rem; margin-bottom:1rem;">💼</div>
+                <h3>Micro Opportunity Workspace</h3>
+                <p>Find hidden gigs before the crowd does. Build your first income stream.</p>
+                <a href="#" class="btn coming-soon" style="margin-top: 1.5rem; display:inline-block;">Enter →</a>
+            </div>
+            <div class="block-card">
+                <div style="font-size:2rem; margin-bottom:1rem;">🕵️</div>
+                <h3>Anonymous Section</h3>
+                <p>Speak the unsaid. Rant about college. No names. Just hard truths.</p>
+                <a href="/anonymous" class="btn" style="margin-top: 1.5rem; display:inline-block;">Vent →</a>
+            </div>
+        </section>
+
+        <!-- Community Section -->
+        <section style="text-align:center; padding: 3rem 0;">
+            <h2 class="glow-text" style="margin-bottom:0.5rem;">Community</h2>
+            <p style="color: var(--text-muted); margin-bottom: 2rem;">Join the builders. Drop the degree anxiety.</p>
+            <div class="community-grid">
+                <div class="comm-box coming-soon" style="font-size:1.5rem; flex-direction:column; gap:0.3rem;">
+                    <span>💬</span><span style="font-size:0.7rem;">Discord</span></div>
+                <div class="comm-box coming-soon" style="font-size:1.5rem; flex-direction:column; gap:0.3rem;">
+                    <span>📲</span><span style="font-size:0.7rem;">WhatsApp</span></div>
+                <div class="comm-box coming-soon" style="font-size:1.5rem; flex-direction:column; gap:0.3rem;">
+                    <span>📸</span><span style="font-size:0.7rem;">Instagram</span></div>
+                <div class="comm-box coming-soon"
+                    style="flex-direction:column; gap:0.3rem; font-size:0.75rem; color:var(--text-muted);">
+                    Coming<br>Soon</div>
+                <div class="comm-box coming-soon"
+                    style="flex-direction:column; gap:0.3rem; font-size:0.75rem; color:var(--text-muted);">
+                    Coming<br>Soon</div>
+                <div class="comm-box coming-soon"
+                    style="flex-direction:column; gap:0.3rem; font-size:0.75rem; color:var(--text-muted);">
+                    Coming<br>Soon</div>
+                <div class="comm-box coming-soon"
+                    style="flex-direction:column; gap:0.3rem; font-size:0.75rem; color:var(--text-muted);">
+                    Coming<br>Soon</div>
+                <div class="comm-box coming-soon"
+                    style="flex-direction:column; gap:0.3rem; font-size:0.75rem; color:var(--text-muted);">
+                    Coming<br>Soon</div>
+                <div class="comm-box coming-soon"
+                    style="flex-direction:column; gap:0.3rem; font-size:0.75rem; color:var(--text-muted);">
+                    Coming<br>Soon</div>
+                <div class="comm-box coming-soon"
+                    style="flex-direction:column; gap:0.3rem; font-size:0.75rem; color:var(--text-muted);">
+                    Coming<br>Soon</div>
+            </div>
+        </section>
+
+        <div class="closing-line">
+            <strong>Degree won't build your career.<br>Your <span style="color:var(--accent)">execution</span>
+                will.</strong>
+        </div>
+
+        <!-- Footer -->
+        <footer>
+            <div class="nav-brand glow-text" style="font-size: 1.2rem;">_ CS.E © 2026</div>
+            <div class="footer-links">
+                <a href="#" class="coming-soon">Terms</a>
+                <a href="#" class="coming-soon">Privacy</a>
+                <a href="#" class="coming-soon">Security</a>
+                <a href="#" class="coming-soon">Status</a>
+                <a href="#" class="coming-soon">Community</a>
+                <a href="#" class="coming-soon">Docs</a>
+                <a href="#" class="coming-soon">Contact</a>
+            </div>
+        </footer>
+    </div>
+
+    <script src="script.js"></script>
+    <script>
+        // ════════════════════════════════════════
+        // HERO BACKGROUND — 3D Hovering Boxes
+        // ════════════════════════════════════════
+        (function () {
+            const canvas = document.getElementById('hero-canvas');
+            const ctx = canvas.getContext('2d');
+            let W, H, boxes = [], mouse = { x: -999, y: -999 };
+
+            function resize() {
+                W = canvas.width = window.innerWidth;
+                H = canvas.height = window.innerHeight;
+            }
+
+            function randomBetween(a, b) { return a + Math.random() * (b - a); }
+
+            function createBox() {
+                return {
+                    x: randomBetween(0, W),
+                    y: randomBetween(0, H),
+                    size: randomBetween(20, 55),
+                    rot: randomBetween(0, Math.PI),
+                    rotSpeed: randomBetween(-0.005, 0.005),
+                    vx: randomBetween(-0.15, 0.15),
+                    vy: randomBetween(-0.15, 0.15),
+                    alpha: randomBetween(0.04, 0.14),
+                    hovered: false
+                };
+            }
+
+            function init() {
+                resize();
+                boxes = [];
+                const count = Math.floor((W * H) / 22000);
+                for (let i = 0; i < count; i++) boxes.push(createBox());
+            }
+
+            function drawBox(b) {
+                ctx.save();
+                ctx.translate(b.x, b.y);
+                ctx.rotate(b.rot);
+
+                const isLuxury = document.body.classList.contains('luxury');
+                const col = isLuxury ? '212,175,55' : '0,229,255';
+                const col2 = isLuxury ? '197,160,0' : '0,255,136';
+
+                const alpha = b.hovered ? Math.min(b.alpha * 5, 0.7) : b.alpha;
+                const s = b.size;
+
+                // Draw isometric cube face top
+                ctx.beginPath();
+                ctx.moveTo(0, -s * 0.6);
+                ctx.lineTo(s * 0.5, -s * 0.2);
+                ctx.lineTo(0, s * 0.2);
+                ctx.lineTo(-s * 0.5, -s * 0.2);
+                ctx.closePath();
+                ctx.fillStyle = `rgba(${col},${alpha})`;
+                ctx.strokeStyle = `rgba(${col},${alpha * 3})`;
+                ctx.lineWidth = b.hovered ? 1.5 : 0.5;
+                ctx.fill();
+                ctx.stroke();
+
+                // right face
+                ctx.beginPath();
+                ctx.moveTo(s * 0.5, -s * 0.2);
+                ctx.lineTo(s * 0.5, s * 0.4);
+                ctx.lineTo(0, s * 0.8);
+                ctx.lineTo(0, s * 0.2);
+                ctx.closePath();
+                ctx.fillStyle = `rgba(${col2},${alpha * 0.4})`;
+                ctx.strokeStyle = `rgba(${col},${alpha * 2})`;
+                ctx.fill();
+                ctx.stroke();
+
+                // left face
+                ctx.beginPath();
+                ctx.moveTo(-s * 0.5, -s * 0.2);
+                ctx.lineTo(0, s * 0.2);
+                ctx.lineTo(0, s * 0.8);
+                ctx.lineTo(-s * 0.5, s * 0.4);
+                ctx.closePath();
+                ctx.fillStyle = `rgba(${col},${alpha * 0.2})`;
+                ctx.strokeStyle = `rgba(${col},${alpha * 2})`;
+                ctx.fill();
+                ctx.stroke();
+
+                ctx.restore();
+            }
+
+            function tick() {
+                ctx.clearRect(0, 0, W, H);
+                boxes.forEach(b => {
+                    b.rot += b.rotSpeed;
+                    b.x += b.vx;
+                    b.y += b.vy;
+                    if (b.x < -100) b.x = W + 100;
+                    if (b.x > W + 100) b.x = -100;
+                    if (b.y < -100) b.y = H + 100;
+                    if (b.y > H + 100) b.y = -100;
+
+                    const dx = mouse.x - b.x;
+                    const dy = mouse.y - b.y;
+                    const dist = Math.sqrt(dx * dx + dy * dy);
+                    b.hovered = dist < 120;
+
+                    if (b.hovered) {
+                        b.x -= dx * 0.02;
+                        b.y -= dy * 0.02;
+                    }
+
+                    drawBox(b);
+                });
+                requestAnimationFrame(tick);
+            }
+
+            window.addEventListener('resize', init);
+            window.addEventListener('mousemove', e => { mouse.x = e.clientX; mouse.y = e.clientY; });
+            init();
+            tick();
+        })();
+
+        // ════════════════════════════════════════
+        // PLAY MODAL — Voxel Particle Field
+        // ════════════════════════════════════════
+        (function () {
+            const openBtn = document.getElementById('open-play');
+            const closeBtn = document.getElementById('close-play');
+            const modal = document.getElementById('play-modal');
+            const canvas = document.getElementById('play-canvas');
+            const ctx = canvas.getContext('2d');
+            let particles = [], anim, W, H;
+
+            function initCanvas() {
+                W = canvas.width = window.innerWidth;
+                H = canvas.height = window.innerHeight;
+            }
+
+            function spawnParticle(x, y, isManual = false) {
+                const count = isManual ? 12 : 1;
+                for (let i = 0; i < count; i++) {
+                    const angle = Math.random() * Math.PI * 2;
+                    const speed = isManual ? Math.random() * 5 + 2 : Math.random() * 1.5 + 0.3;
+                    particles.push({
+                        x: x || W / 2, y: y || H / 2,
+                        vx: Math.cos(angle) * speed,
+                        vy: Math.sin(angle) * speed - (isManual ? 3 : 0),
+                        life: 1.0,
+                        decay: Math.random() * 0.008 + 0.004,
+                        size: Math.random() * 14 + 4,
+                        hue: Math.random() * 60 + 160, // cyan to green range
+                        isManual
+                    });
+                }
+            }
+
+            function tickPlay() {
+                ctx.fillStyle = 'rgba(10,12,16,0.2)';
+                ctx.fillRect(0, 0, W, H);
+
+                // Auto-spawn ambient particles
+                if (Math.random() < 0.3) spawnParticle(Math.random() * W, Math.random() * H);
+
+                particles = particles.filter(p => p.life > 0);
+                particles.forEach(p => {
+                    p.x += p.vx;
+                    p.y += p.vy;
+                    p.vy += 0.05; // gravity
+                    p.life -= p.decay;
+                    p.vx *= 0.99;
+
+                    ctx.save();
+                    ctx.globalAlpha = p.life;
+                    const isLuxury = document.body.classList.contains('luxury');
+                    const color = isLuxury ? `hsl(47,90%,60%)` : `hsl(${p.hue},100%,60%)`;
+                    ctx.fillStyle = color;
+                    ctx.shadowColor = color;
+                    ctx.shadowBlur = 12;
+
+                    // Draw voxel (rotated square)
+                    ctx.translate(p.x, p.y);
+                    ctx.rotate(p.life * 3);
+                    ctx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size);
+                    ctx.restore();
+                });
+
+                anim = requestAnimationFrame(tickPlay);
+            }
+
+            openBtn.addEventListener('click', () => {
+                modal.classList.add('open');
+                initCanvas();
+                tickPlay();
+            });
+
+            closeBtn.addEventListener('click', () => {
+                modal.classList.remove('open');
+                cancelAnimationFrame(anim);
+                particles = [];
+            });
+
+            canvas.addEventListener('click', e => {
+                const rect = canvas.getBoundingClientRect();
+                spawnParticle(e.clientX - rect.left, e.clientY - rect.top, true);
+            });
+
+            window.addEventListener('resize', () => { if (modal.classList.contains('open')) initCanvas(); });
+        })();
+
+        // ════════════════════════════════════════
+        // LISTEN MODAL — Audio Wave Visualizer
+        // ════════════════════════════════════════
+        (function () {
+            const openBtn = document.getElementById('open-listen');
+            const closeBtn = document.getElementById('close-listen');
+            const modal = document.getElementById('listen-modal');
+            const canvas = document.getElementById('listen-canvas');
+            const ctx = canvas.getContext('2d');
+            let anim, W, H, t = 0;
+
+            function initCanvas() {
+                W = canvas.width = window.innerWidth;
+                H = canvas.height = window.innerHeight;
+            }
+
+            function tickListen() {
+                t += 0.015;
+                ctx.fillStyle = 'rgba(6,4,12,0.15)';
+                ctx.fillRect(0, 0, W, H);
+
+                const isLuxury = document.body.classList.contains('luxury');
+                const lines = 6;
+
+                for (let l = 0; l < lines; l++) {
+                    const offset = (l / lines) * Math.PI * 2;
+                    const amp = 80 + l * 15;
+                    const freq = 0.008 + l * 0.002;
+                    const hue = isLuxury ? 47 : 180 + l * 25;
+
+                    ctx.beginPath();
+                    ctx.moveTo(0, H / 2);
+
+                    for (let x = 0; x <= W; x += 2) {
+                        const y = H / 2
+                            + Math.sin(x * freq + t + offset) * amp
+                            + Math.sin(x * freq * 0.5 + t * 1.3 + offset) * (amp * 0.4);
+                        if (x === 0) ctx.moveTo(x, y);
+                        else ctx.lineTo(x, y);
+                    }
+
+                    ctx.strokeStyle = isLuxury
+                        ? `hsla(47,90%,${50 + l * 5}%,${0.3 - l * 0.03})`
+                        : `hsla(${hue},100%,65%,${0.35 - l * 0.04})`;
+                    ctx.lineWidth = 3 - l * 0.3;
+                    ctx.shadowColor = ctx.strokeStyle;
+                    ctx.shadowBlur = 8;
+                    ctx.stroke();
+                }
+
+                // Orb at center
+                const grad = ctx.createRadialGradient(W / 2, H / 2, 0, W / 2, H / 2, 100 + Math.sin(t * 2) * 20);
+                const col = isLuxury ? 'rgba(212,175,55,' : 'rgba(0,229,255,';
+                grad.addColorStop(0, col + '0.15)');
+                grad.addColorStop(1, col + '0)');
+                ctx.beginPath();
+                ctx.arc(W / 2, H / 2, 100 + Math.sin(t * 2) * 20, 0, Math.PI * 2);
+                ctx.fillStyle = grad;
+                ctx.fill();
+
+                anim = requestAnimationFrame(tickListen);
+            }
+
+            openBtn.addEventListener('click', () => {
+                modal.classList.add('open');
+                initCanvas();
+                tickListen();
+            });
+
+            closeBtn.addEventListener('click', () => {
+                modal.classList.remove('open');
+                cancelAnimationFrame(anim);
+            });
+
+            window.addEventListener('resize', () => { if (modal.classList.contains('open')) initCanvas(); });
+        })();
+    </script>
+</body>
+
+</html>

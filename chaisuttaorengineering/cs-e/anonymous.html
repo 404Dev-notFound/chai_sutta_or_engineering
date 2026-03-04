@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Anonymous - CS.E</title>
+    <link rel="stylesheet" href="theme.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <div class="container">
+        <!-- Navbar -->
+        <nav class="navbar">
+            <a href="/" class="nav-brand glow-text">_ CS.E</a>
+            <div class="nav-links">
+                <a href="/dashboard" class="btn">Dashboard</a>
+                <button id="theme-toggle" class="theme-toggle-btn">🌗</button>
+            </div>
+        </nav>
+
+        <section style="margin-top: 3rem; text-align: center;">
+            <h1 style="color: var(--secondary); text-shadow: var(--glow);">The Anonymous Board</h1>
+            <p style="color: var(--text-muted);">No names. Just hard truths.</p>
+        </section>
+
+        <div class="form-container" style="margin: 2rem auto; padding: 2rem;">
+            <form id="anon-form">
+                <div class="form-group">
+                    <textarea id="anon-content" rows="4" placeholder="Drop a truth bomb..." required></textarea>
+                </div>
+                <div style="display:flex; gap:1rem; justify-content:space-between; align-items:center;">
+                    <span style="font-size:0.8rem; color:var(--text-muted)">Encrypted end-to-end (jk, but it is
+                        anon).</span>
+                    <button type="submit" class="btn btn-highlight">Broadcast</button>
+                </div>
+            </form>
+        </div>
+
+        <div id="posts-container" style="max-width: 600px; margin: 0 auto; padding-bottom: 4rem;">
+            <!-- Posts fetched and injected via JS here -->
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+
+</html>

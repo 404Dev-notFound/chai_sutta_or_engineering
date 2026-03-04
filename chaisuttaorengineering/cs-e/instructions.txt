@@ -1,0 +1,40 @@
+# CS.E - Chai Sutta Or Engineering Instructions
+
+Follow these simple steps to run this project locally.
+
+## Prerequisites
+- **Python 3.10+** installed on your system.
+
+## Installation
+
+1. Open a terminal or command prompt in this folder (`cs-e`).
+2. Install the required Python packages by running:
+   pip install -r requirements.txt
+
+## Machine Learning Model Setup
+
+1. Launch Jupyter Notebook to train the ML model:
+   jupyter notebook train_model.ipynb
+2. Run all the cells in the notebook.
+   This will generate a synthetic dataset and train a Logistic Regression model.
+   It creates a file named `model.pkl` in the folder.
+
+## Running the Web Application
+
+1. Start the Flask application by running:
+   python app.py
+2. Once the server starts, open your browser and navigate to:
+   http://127.0.0.1:5000
+
+## Architecture Overview
+
+- `index.html` → Homepage (Hero section, Drift text, 3 Blocks)
+- `dashboard.html` → The secure area after login containing the ML risk form.
+- `anonymous.html` → Anonymous posting and interaction section.
+- `about.html` → Vision page.
+- `login.html` → Simple login/registration portal.
+- `style.css` → Primary styling mapping out layouts, typography, and spaces.
+- `theme.css` → CSS variables dedicated to swapping between Hacker and Luxury themes.
+- `script.js` → Core animations, API fetch logic, and local storage themes.
+- `app.py` → Main backend routing and SQLite interfacing.
+- `database.db` → Auto-created when `app.py` runs, storing users and anonymous posts.
