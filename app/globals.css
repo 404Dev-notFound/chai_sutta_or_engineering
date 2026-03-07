@@ -1,0 +1,157 @@
+@import "tailwindcss";
+
+@theme {
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+
+  --radius-lg: var(--radius);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-sm: calc(var(--radius) - 4px);
+
+  --font-inter: var(--font-inter);
+  --font-mono: var(--font-jetbrains-mono);
+}
+
+@layer base {
+  :root {
+    /* Base root acts as Hacker Theme by default */
+    --background: #000000;
+    --foreground: #e5e5e5;
+    --primary: #00ff41;
+    --primary-foreground: #000000;
+    --secondary: #1a1a1a;
+    --secondary-foreground: #00ff41;
+    --muted: #111111;
+    --muted-foreground: #888888;
+    --accent: #222222;
+    --accent-foreground: #00ff41;
+    --border: #333333;
+    --input: #1f1f1f;
+    --ring: #00ff41;
+    --radius: 0.2rem;
+  }
+
+  .theme-hacker {
+    --background: #000000;
+    --foreground: #e5e5e5;
+    --primary: #00ff41;
+    --primary-foreground: #000000;
+    --secondary: #111111;
+    --secondary-foreground: #00ff41;
+    --accent: #222222;
+    --accent-foreground: #00ff41;
+    --border: #333333;
+    --ring: #00ff41;
+  }
+
+  .theme-genz {
+    --background: #09090b;
+    --foreground: #fafafa;
+    --primary: #8b5cf6;
+    /* Vibrant purple */
+    --primary-foreground: #ffffff;
+    --secondary: #27272a;
+    --secondary-foreground: #d4d4d8;
+    --accent: #d946ef;
+    /* Fuchsia */
+    --accent-foreground: #ffffff;
+    --border: #27272a;
+    --ring: #8b5cf6;
+    --radius: 0.75rem;
+  }
+
+  .theme-saas {
+    --background: #ffffff;
+    --foreground: #0f172a;
+    --primary: #2563eb;
+    /* Clean blue */
+    --primary-foreground: #ffffff;
+    --secondary: #f1f5f9;
+    --secondary-foreground: #334155;
+    --accent: #e2e8f0;
+    --accent-foreground: #0f172a;
+    --border: #e2e8f0;
+    --ring: #2563eb;
+    --radius: 0.5rem;
+  }
+
+  .theme-night {
+    --background: #020617;
+    /* Deep blue night */
+    --foreground: #f8fafc;
+    --primary: #38bdf8;
+    /* Sky blue */
+    --primary-foreground: #020617;
+    --secondary: #0f172a;
+    --secondary-foreground: #94a3b8;
+    --accent: #1e293b;
+    --accent-foreground: #38bdf8;
+    --border: #1e293b;
+    --ring: #38bdf8;
+    --radius: 0.5rem;
+  }
+
+  .theme-premium {
+    --background: #121212;
+    /* Matte black */
+    --foreground: #f5f5f5;
+    --primary: #d4af37;
+    /* Gold */
+    --primary-foreground: #121212;
+    --secondary: #1c1c1c;
+    --secondary-foreground: #c0c0c0;
+    --accent: #2c2c2c;
+    --accent-foreground: #d4af37;
+    --border: #2a2a2a;
+    --ring: #d4af37;
+    --radius: 0.125rem;
+  }
+}
+
+@layer base {
+  * {
+    border-color: var(--border);
+  }
+
+  body {
+    background-color: var(--background);
+    color: var(--foreground);
+    transition-property: color, background-color, border-color, text-decoration-color, fill, stroke;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    transition-duration: 500ms;
+    font-family: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  }
+
+  .theme-premium body {
+    transition-duration: 1000ms;
+  }
+}
+
+::selection {
+  background-color: rgb(0 255 65 / 0.3);
+  color: var(--primary);
+}
