@@ -1,23 +1,48 @@
 import type { Metadata } from "next";
 import { Inter, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
-import { ThemeProvider } from "@/components/theme-provider";
 
-const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
-const mono = JetBrains_Mono({ subsets: ["latin"], variable: "--font-mono" });
+const inter = Inter({
+  subsets: ["latin"],
+  variable: "--font-inter",
+});
+
+const jetbrainsMono = JetBrains_Mono({
+  subsets: ["latin"],
+  variable: "--font-jetbrains-mono",
+});
 
 export const metadata: Metadata = {
-  title: "CS.E | Chai Sutta or Engineering",
-  description: "Stop Guessing Your Career. Start Engineering It.",
+  title: "CS.E - Chai Sutta Or Engineering",
+  description: "Engineering Isn't a Degree. It's Execution. A scalable AI-powered web platform for engineering students.",
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default function RootLayout({
+  children,
+}: Readonly<{
+  children: React.ReactNode;
+}>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`${inter.variable} ${mono.variable} font-sans antialiased transition-colors duration-300`}>
-        <ThemeProvider attribute="class" defaultTheme="dark">
-          {children}
-        </ThemeProvider>
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              try {
+                const stored = localStorage.getItem('cse-theme-storage');
+                if (stored) {
+                  const theme = JSON.parse(stored).state.theme;
+                  document.documentElement.className = theme === 'hacker' ? '' : 'theme-' + theme;
+                }
+              } catch (e) {}
+            `,
+          }}
+        />
+      </head>
+      <body
+        className={`${inter.variable} ${jetbrainsMono.variable} antialiased min-h-screen flex flex-col`}
+      >
+        {children}
       </body>
     </html>
   );
