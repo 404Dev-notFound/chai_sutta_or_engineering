@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+<meta charset="UTF-8">
+<title>BTech Career Navigator</title>
+
+<link rel="stylesheet" href="style.css">
+
+</head>
+
+<body>
+
+<header>
+
+<h1>BTech Career Navigator</h1>
+
+<nav>
+
+<a href="#career">Career Finder</a>
+<a href="#skills">Skill Gap</a>
+<a href="#roadmap">Roadmap</a>
+
+</nav>
+
+</header>
+
+
+
+<section class="hero">
+
+<h2>Discover Your Career Path After B.Tech</h2>
+
+<p>Analyze your skills, explore careers, and build your roadmap.</p>
+
+</section>
+
+
+
+<section id="career" class="card">
+
+<h2>Career Path Finder</h2>
+
+<label>Branch</label>
+
+<select id="branch">
+
+<option>Computer Science</option>
+<option>Electronics</option>
+<option>Mechanical</option>
+<option>Civil</option>
+
+</select>
+
+
+<label>Interest</label>
+
+<select id="interest">
+
+<option>Coding</option>
+<option>Research</option>
+<option>Business</option>
+<option>Government</option>
+
+</select>
+
+<button onclick="findCareer()">Find Career</button>
+
+<p id="careerResult"></p>
+
+</section>
+
+
+
+
+<section id="skills" class="card">
+
+<h2>Skill Gap Analyzer</h2>
+
+<input id="currentSkills" placeholder="Enter your skills">
+
+<select id="targetCareer">
+
+<option>Backend Developer</option>
+<option>Data Scientist</option>
+<option>AI Engineer</option>
+
+</select>
+
+<button onclick="analyzeSkills()">Analyze Skills</button>
+
+<p id="skillResult"></p>
+
+</section>
+
+
+
+<section id="roadmap" class="card">
+
+<h2>Roadmap Generator</h2>
+
+<select id="goal">
+
+<option>Software Job</option>
+<option>GATE</option>
+<option>MS Abroad</option>
+
+</select>
+
+<button onclick="generateRoadmap()">Generate Roadmap</button>
+
+<div id="roadmapResult"></div>
+
+</section>
+
+
+
+<footer>
+
+<p>Built for B.Tech Students</p>
+
+</footer>
+
+<script src="script.js"></script>
+
+</body>
+</html>
