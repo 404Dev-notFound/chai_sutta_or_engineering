@@ -1,0 +1,29 @@
+# CS.E (Chai Sutta Or Engineering) - Task Plan
+
+- [x] Phase 1: Planning and Architecture
+  - [x] Create implementation plan
+  - [x] Await user approval
+- [x] Phase 2: Project Initialization
+  - [x] Initialize Next.js (App Router, Tailwind, TypeScript)
+  - [x] Initialize FastAPI project structure (PostgreSQL, SQLAlchemy, Pydantic)
+  - [x] Setup Docker (Dockerfile for frontend, backend, docker-compose.yml)
+- [x] Phase 3: Frontend Foundation & Theming
+  - [x] Setup Zustand store and LocalStorage persistence for themes
+  - [x] Create Full-Screen Theme Selector Overlay on first load
+  - [x] Implement global dynamic themes (Hacker, Gen-Z Rebel, Clean SaaS, Night Creator, Premium)
+- [x] Phase 4: Frontend Layout & Components
+  - [x] Navbar with basic navigation and "Coming Soon" animation
+  - [x] Hero Section with typing animation and Gen-Z styled buttons
+  - [x] Drift Section with dynamically switching lines
+  - [x] Feature Blocks (Dropout Risk, Micro Opportunity Workspace, Anonymous Section)
+  - [x] Community Section (Icon cards grid)
+  - [x] Footer with "Coming Soon" links
+- [/] Phase 5: Backend Foundation & API
+  - [ ] Setup database models and schemas (User, Anonymity, Workspace)
+  - [ ] Implement JWT Authentication (Login/Register, roles)
+  - [ ] Dropout Risk Engine (Weighted scoring endpoint)
+  - [ ] Placeholder routes for Themes, Workspace, Anonymous feed
+- [ ] Phase 6: Integration & Verification
+  - [ ] Connect Frontend to Backend (Dropout Risk, Theme persistence, Auth)
+  - [ ] Verify Docker Compose workflow
+  - [ ] Final UI/UX review (animations, responsiveness, console errors)
